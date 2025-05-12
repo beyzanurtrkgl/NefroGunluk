@@ -1,0 +1,19 @@
+<div *ngIf="!authService.isLoggedIn(); else mainContent">
+  <router-outlet></router-outlet>
+</div>
+
+<ng-template #mainContent>
+  <div class="main-container">
+    <div class="navbar">
+      <app-navbar></app-navbar>
+    </div>
+    <div class="content-container">
+      <div class="profile-section">
+        <app-profile></app-profile>
+      </div>
+      <div class="data-entry-section">
+        <app-data-entry></app-data-entry>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,52 @@
+<div class="profile-container">
+  <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="Profil Fotoğrafı" class="profile-image" />
+  
+  <div *ngIf="loading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Yükleniyor...</p>
+  </div>
+
+  <div *ngIf="success" class="alert alert-success">
+    {{ success }}
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  
+  <form (ngSubmit)="saveProfile()" #profileForm="ngForm">
+    <div class="form-group">
+      <label>Ad Soyad:</label>
+      <input type="text" name="fullName" [(ngModel)]="profile.fullName" required>
+    </div>
+    
+    <div class="form-group">
+      <label>Yaş:</label>
+      <input type="number" name="age" [(ngModel)]="profile.age">
+    </div>
+    
+    <div class="form-group">
+      <label>Cinsiyet:</label>
+      <select name="gender" [(ngModel)]="profile.gender" required>
+        <option value="" disabled selected>Seçiniz</option>
+        <option value="Erkek">Erkek</option>
+        <option value="Kadın">Kadın</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Boy (cm):</label>
+      <input type="number" name="height" [(ngModel)]="profile.height">
+    </div>
+    
+    <div class="form-group">
+      <label>Kilo (kg):</label>
+      <input type="number" name="weight" [(ngModel)]="profile.weight">
+    </div>
+    
+    <button type="submit" [disabled]="!profileForm.valid || loading">
+      <span *ngIf="loading" class="button-spinner"></span>
+      Kaydet
+    </button>
+  </form>
+</div>

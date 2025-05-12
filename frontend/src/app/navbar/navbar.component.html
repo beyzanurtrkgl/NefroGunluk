@@ -1,0 +1,8 @@
+<div class="navbar-container">
+  <div class="logo">NefroGunluk</div>
+  
+  <div class="user-info" *ngIf="currentUser">
+    <span class="user-name">{{ currentUser.username }}</span>
+    <button class="logout-btn" (click)="logout()">Çıkış Yap</button>
+  </div>
+</div>

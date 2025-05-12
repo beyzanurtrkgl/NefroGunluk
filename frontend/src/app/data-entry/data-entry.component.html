@@ -1,0 +1,171 @@
+<div class="data-entry-container">
+  <div class="header">
+    <h2>Günlük Hasta Takip Formu</h2>
+    <div class="date-display">
+      {{ patientDailyData.date | date:'dd.MM.yyyy' }}
+    </div>
+  </div>
+  
+  <div class="form-container">
+    <!-- Yükleniyor göstergesi -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="spinner"></div>
+      <p>İşleminiz yapılıyor...</p>
+    </div>
+    
+    
+    <!-- Başarı mesajı -->
+    <div *ngIf="success" class="alert alert-success">
+      <i class="fas fa-check-circle"></i> {{ success }}
+    </div>
+    
+    <form (ngSubmit)="saveData()" #dailyDataForm="ngForm">
+      <div class="info-card" *ngIf="todayDataExists">
+        <div class="card-icon">
+          <i class="fas fa-info-circle"></i>
+        </div>
+        <div class="card-content">
+          Bugün için bir kayıt zaten mevcut. Değişiklik yapıp kaydederseniz, mevcut kayıt güncellenecektir.
+        </div>
+      </div>
+      
+      <!-- Su Tüketimi -->
+      <div class="form-section">
+        <h3>Su Tüketimi (Litre)</h3>
+        <div class="counter-input">
+          <button type="button" class="counter-btn" (click)="changeWaterIntake(-0.5)">-</button>
+          <div class="counter-value">{{ patientDailyData.waterIntake }} L</div>
+          <button type="button" class="counter-btn" (click)="changeWaterIntake(0.5)">+</button>
+        </div>
+        <div class="input-slider">
+          <input type="range" min="0" max="5" step="0.1" 
+                 [(ngModel)]="patientDailyData.waterIntake" name="waterIntake">
+          <div class="slider-marks">
+            <span>0</span>
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tuvalet Ziyaretleri -->
+      <div class="form-section">
+        <h3>Tuvalet Ziyareti (Gün İçinde)</h3>
+        <div class="counter-input">
+          <button type="button" class="counter-btn" (click)="changeBathroomVisits(-1)">-</button>
+          <div class="counter-value">{{ patientDailyData.bathroomVisits }} kez</div>
+          <button type="button" class="counter-btn" (click)="changeBathroomVisits(1)">+</button>
+        </div>
+        <div class="input-slider">
+          <input type="range" min="0" max="20" step="1" 
+                 [(ngModel)]="patientDailyData.bathroomVisits" name="bathroomVisits">
+          <div class="slider-marks">
+            <span>0</span>
+            <span>5</span>
+            <span>10</span>
+            <span>15</span>
+            <span>20</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stres Seviyesi -->
+      <div class="form-section">
+        <h3>Stres Seviyesi</h3>
+        <div class="input-slider">
+          <input type="range" min="1" max="10" step="1" 
+                 [(ngModel)]="patientDailyData.stressLevel" name="stressLevel">
+          <div class="slider-marks">
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>4</span>
+            <span>5</span>
+            <span>6</span>
+            <span>7</span>
+            <span>8</span>
+            <span>9</span>
+            <span>10</span>
+          </div>
+        </div>
+        <div class="stress-level-indicator">
+          <div class="stress-value">{{ patientDailyData.stressLevel }}</div>
+          <div class="stress-label">
+            <span *ngIf="patientDailyData.stressLevel <= 3">Düşük</span>
+            <span *ngIf="patientDailyData.stressLevel > 3 && patientDailyData.stressLevel <= 7">Orta</span>
+            <span *ngIf="patientDailyData.stressLevel > 7">Yüksek</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- İdrar Rengi -->
+      <div class="form-section">
+        <h3>İdrar Rengi</h3>
+        <div class="color-options">
+          <div *ngFor="let option of urineColorOptions" 
+               class="color-option"
+               [class.selected]="patientDailyData.urineColor === option.value"
+               (click)="patientDailyData.urineColor = option.value">
+            <div class="color-sample" [ngClass]="option.cssClass"></div>
+            <div class="color-label">{{ option.label }}</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Diyaliz -->
+      <div class="form-section">
+        <h3>Bugün Diyalize Girdiniz mi?</h3>
+        <div class="toggle-container">
+          <label class="toggle">
+            <input type="checkbox" [(ngModel)]="patientDailyData.dialysis" name="dialysis">
+            <span class="toggle-switch"></span>
+            <span class="toggle-label">
+              {{ patientDailyData.dialysis ? 'Evet' : 'Hayır' }}
+            </span>
+          </label>
+        </div>
+      </div>
+      
+      <!-- Tansiyon -->
+      <div class="form-section">
+        <h3>Tansiyon Değerleri</h3>
+        <div class="blood-pressure-inputs">
+          <div class="bp-input-group">
+            <label>Büyük Tansiyon (Sistolik)</label>
+            <input type="number" class="form-control" 
+                   [(ngModel)]="patientDailyData.bloodPressure.systolic" 
+                   name="systolic" min="70" max="250">
+            <span class="unit">mmHg</span>
+          </div>
+          <div class="bp-input-group">
+            <label>Küçük Tansiyon (Diyastolik)</label>
+            <input type="number" class="form-control" 
+                   [(ngModel)]="patientDailyData.bloodPressure.diastolic" 
+                   name="diastolic" min="40" max="150">
+            <span class="unit">mmHg</span>
+          </div>
+        </div>
+
+      </div>
+      
+      <!-- Butonlar -->
+      <div class="form-buttons">
+        <button type="submit" class="btn-save" [disabled]="loading || !dailyDataForm.form.valid">
+          <span *ngIf="loading" class="button-spinner"></span>
+          {{ todayDataExists ? 'Güncelle' : 'Kaydet' }}
+        </button>
+        <button type="button" class="btn-reset" [disabled]="loading" (click)="resetForm()">Temizle</button>
+      </div>
+    </form>
+    
+    <!-- Analiz Butonları -->
+    <div class="analytics-section">
+      <div class="analytics-buttons">
+        <button type="button" [disabled]="loading" (click)="showAnalytics('analytics-buttons')">Analiz</button>
+      </div>
+    </div>
+  </div>
+</div>
